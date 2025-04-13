@@ -17,6 +17,7 @@ function App() {
     setError('')
     try {
       const response = await fetch('https://urlshortbackend-2phu.onrender.com/url/shorten', {
+        // const response = await fetch('http://localhost:3000/url/shorten', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ originalURL: url })
@@ -28,7 +29,9 @@ function App() {
       }
       
       const data = await response.json()
+      console.log(data)
       setShortenedUrl(`https://urlshortbackend-2phu.onrender.com/${data.id}`)
+      // setShortenedUrl(`http://localhost:3000/${data.id}`)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to shorten URL. Please try again.')
     } finally {
