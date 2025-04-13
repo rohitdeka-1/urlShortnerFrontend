@@ -19,6 +19,7 @@ function App() {
       const response = await fetch('https://urlshortbackend-2phu.onrender.com/url/shorten', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({ redirectURL: url })
       })
       
