@@ -1,10 +1,15 @@
-import { useState } from 'react'
+import { useState } from 'react';
+
 
 function App() {
   const [url, setUrl] = useState('')
   const [shortenedUrl, setShortenedUrl] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+
+  const BASEURL = "https://urlshortbackend-2phu.onrender.com/url/shorten";
+  const BASEURL1 = "http://localhost:3000/url/shorten";
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -16,21 +21,33 @@ function App() {
     setLoading(true)
     setError('')
     try {
-      const response = await fetch('https://urlshortbackend-2phu.onrender.com/url/shorten', {
+      // const response = await fetch('https://urlshortbackend-2phu.onrender.com/url/shorten', {
         // const response = await fetch('http://localhost:3000/url/shorten', {
+
+        const response = await fetch(BASEURL1,{
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ originalURL: url })
       })
+
+      
       
       if (!response.ok) {
         const errorData = await response.json()
         throw new Error(errorData.message || 'Failed to shorten URL')
       }
-      
+
       const data = await response.json()
-      console.log(data)
-      setShortenedUrl(`https://urlshortbackend-2phu.onrender.com/${data.id}`)
+      if(data.code==="URL_DOESNT_EXITS"){
+        setError(data.message);
+
+      }
+      else{
+        console.log(data)
+        setShortenedUrl(`https://urlshortbackend-2phu.onrender.com/${data.id}`);
+      }
+      
+      
       // setShortenedUrl(`http://localhost:3000/${data.id}`)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to shorten URL. Please try again.')
