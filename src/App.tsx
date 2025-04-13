@@ -8,7 +8,7 @@ function App() {
   const [loading, setLoading] = useState(false)
 
   const BASEURL = "https://urlshortbackend-2phu.onrender.com/url/shorten";
-  const BASEURL1 = "http://localhost:3000/url/shorten";
+  // const BASEURL1 = "http://localhost:3000/url/shorten";
 
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -24,7 +24,7 @@ function App() {
       // const response = await fetch('https://urlshortbackend-2phu.onrender.com/url/shorten', {
         // const response = await fetch('http://localhost:3000/url/shorten', {
 
-        const response = await fetch(BASEURL1,{
+        const response = await fetch(BASEURL,{
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ originalURL: url })
