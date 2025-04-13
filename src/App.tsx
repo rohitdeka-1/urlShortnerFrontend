@@ -16,7 +16,7 @@ function App() {
     setLoading(true)
     setError('')
     try {
-      const response = await fetch('http://localhost:3000/url/shorten', {
+      const response = await fetch('https://urlshortbackend-2phu.onrender.com/url/shorten', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ redirectURL: url })
