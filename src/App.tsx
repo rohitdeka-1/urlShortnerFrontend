@@ -7,8 +7,9 @@ function App() {
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
 
-  const BASEURL = "https://urlshortbackend-2phu.onrender.com/url/shorten";
-  // const BASEURL1 = "http://localhost:3000/url/shorten";
+  // Use backend base URL. For local development use http://localhost:5000
+  const BACKEND_BASE = import.meta.env.VITE_BACKEND_BASE || 'http://localhost:5000'
+  const BASEURL = `${BACKEND_BASE}/shorten`
 
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -21,34 +22,27 @@ function App() {
     setLoading(true)
     setError('')
     try {
-      // const response = await fetch('https://urlshortbackend-2phu.onrender.com/url/shorten', {
-        // const response = await fetch('http://localhost:3000/url/shorten', {
-
-        const response = await fetch(BASEURL,{
+      const response = await fetch(BASEURL,{ 
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ originalURL: url })
+        // backend expects `longUrl` in the body
+        body: JSON.stringify({ longUrl: url })
       })
 
-      
-      
       if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.message || 'Failed to shorten URL')
+        const errorData = await response.json().catch(() => ({}))
+        throw new Error(errorData.error || 'Failed to shorten URL')
       }
 
       const data = await response.json()
-      if(data.code==="URL_DOESNT_EXITS"){
-        setError(data.message);
-
+      // backend returns { shortUrl: 'https://.../abc123' }
+      if (data && data.shortUrl) {
+        setShortenedUrl(data.shortUrl)
+      } else if (data && data.error) {
+        setError(data.error)
+      } else {
+        setError('Unexpected response from server')
       }
-      else{
-        console.log(data)
-        setShortenedUrl(`https://urlshortbackend-2phu.onrender.com/${data.id}`);
-      }
-      
-      
-      // setShortenedUrl(`http://localhost:3000/${data.id}`)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to shorten URL. Please try again.')
     } finally {
@@ -96,24 +90,35 @@ function App() {
 
           <div className="mt-8 p-6 bg-gray-700 rounded-xl border border-gray-600">
             <p className="text-sm text-gray-300 mb-3">Your shortened URL:</p>
-            <div className="flex items-center space-x-3">
+            <div className="space-y-4">
               <input
                 type="text"
                 value={shortenedUrl || 'Your shortened URL will appear here'}
                 readOnly
-                className="flex-1 px-4 py-3 bg-gray-800 border border-gray-600 rounded-xl text-white text-sm"
+                className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-xl text-white text-sm"
               />
-              <button
-                onClick={() => {
-                  if (shortenedUrl) {
-                    navigator.clipboard.writeText(shortenedUrl)
-                  }
-                }}
-                disabled={!shortenedUrl}
-                className="px-4 py-3 bg-purple-600 text-white rounded-xl hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
-              >
-                Copy
-              </button>
+              {shortenedUrl && (
+                <div className="flex flex-col space-y-3 sm:flex-row sm:space-y-0 sm:space-x-3">
+                  <a
+                    href={shortenedUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex-1 px-6 py-4 bg-green-600 text-white text-center font-medium rounded-xl hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:ring-offset-gray-700 transition-all duration-200"
+                  >
+                    🔗 Open Link
+                  </a>
+                  <button
+                    onClick={() => {
+                      if (shortenedUrl) {
+                        navigator.clipboard.writeText(shortenedUrl)
+                      }
+                    }}
+                    className="flex-1 px-6 py-4 bg-purple-600 text-white font-medium rounded-xl hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-gray-700 transition-all duration-200"
+                  >
+                    📋 Copy URL
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </div>
