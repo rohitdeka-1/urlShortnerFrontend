@@ -8,7 +8,7 @@ function App() {
   const [loading, setLoading] = useState(false)
 
   // Use backend base URL. For local development use http://localhost:5000
-  const BACKEND_BASE = import.meta.env.VITE_BACKEND_BASE || 'http://localhost:5000'
+  const BACKEND_BASE = import.meta.env.VITE_BACKEND_BASE || 'http://rohit-url.ap-south-1.elasticbeanstalk.com'
   const BASEURL = `${BACKEND_BASE}/shorten`
 
 
